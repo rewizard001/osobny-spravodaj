@@ -46,3 +46,19 @@ jobs:
             build/registry.yaml
             build/validation_report.txt
             build/schema_report.txt
+      - name: Run fetch (pilot sources)
+        run: |
+          python tools/run_fetch.py \
+            --registry build/registry.json \
+            --sources BA_CITY_NEWS,BSK_RSS,SR_ZJAZD,EU_EP_RSS \
+            --outdir out \
+            --limit 40
+
+      - name: Upload daily brief artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: daily-brief
+          path: |
+            out/daily_brief.md
+            out/run_warnings.txt
+            data/items.jsonl

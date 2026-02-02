@@ -1,0 +1,555 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://osobny-spravodaj.local/schemas/registry.schema.json",
+  "title": "Osobny Spravodaj Registry",
+  "type": "object",
+  "required": [
+    "defaults",
+    "sources"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "defaults": {
+      "type": "object",
+      "required": [
+        "thresholds",
+        "daily_limits",
+        "push_windows",
+        "cooldowns_default"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "thresholds": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "BA",
+            "BSK",
+            "SR",
+            "SUSEDIA",
+            "EU_GLOBAL"
+          ],
+          "properties": {
+            "BA": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 10
+            },
+            "BSK": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 10
+            },
+            "SR": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 10
+            },
+            "SUSEDIA": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 10
+            },
+            "EU_GLOBAL": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 10
+            }
+          }
+        },
+        "daily_limits": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "BA",
+            "BSK",
+            "SR",
+            "SUSEDIA",
+            "EU_GLOBAL"
+          ],
+          "properties": {
+            "BA": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 200
+            },
+            "BSK": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 200
+            },
+            "SR": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 200
+            },
+            "SUSEDIA": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 200
+            },
+            "EU_GLOBAL": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 200
+            }
+          }
+        },
+        "push_windows": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "practical",
+            "decision"
+          ],
+          "properties": {
+            "practical": {
+              "$ref": "#/$defs/timeWindow"
+            },
+            "decision": {
+              "$ref": "#/$defs/timeWindow"
+            }
+          }
+        },
+        "cooldowns_default": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "urgent",
+            "practical",
+            "decision"
+          ],
+          "properties": {
+            "urgent": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 10080
+            },
+            "practical": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 10080
+            },
+            "decision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 10080
+            }
+          }
+        }
+      }
+    },
+    "sources": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/source"
+      }
+    },
+    "tag_display": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      },
+      "description": "Optional mapping of normalized tag ids -> human display labels (present if --normalize-tags)."
+    }
+  },
+  "$defs": {
+    "timeHHMM": {
+      "type": "string",
+      "pattern": "^(?:[01]\\d|2[0-3]):[0-5]\\d$"
+    },
+    "timeWindow": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "items": {
+        "$ref": "#/$defs/timeHHMM"
+      }
+    },
+    "urlHttp": {
+      "type": "string",
+      "pattern": "^https?://"
+    },
+    "enumSourceType": {
+      "type": "string",
+      "enum": [
+        "urad",
+        "kalendar",
+        "agentura",
+        "open_data"
+      ]
+    },
+    "enumFetchMethod": {
+      "type": "string",
+      "enum": [
+        "rss",
+        "html_list",
+        "html_detail",
+        "api",
+        "dataset"
+      ]
+    },
+    "enumGeoDefault": {
+      "type": "string",
+      "enum": [
+        "BA",
+        "BSK",
+        "SR",
+        "SUSEDIA",
+        "EU_GLOBAL"
+      ]
+    },
+    "enumBriefLevel": {
+      "type": "string",
+      "enum": [
+        "Bratislava",
+        "BSK",
+        "Slovensko",
+        "Susedia",
+        "EU_Global"
+      ]
+    },
+    "enumBriefInclusion": {
+      "type": "string",
+      "enum": [
+        "all_within_limit",
+        "top_only",
+        "brief_only",
+        "never"
+      ]
+    },
+    "enumNotifyPolicy": {
+      "type": "string",
+      "enum": [
+        "always",
+        "by_score",
+        "never"
+      ]
+    },
+    "enumNotifyClass": {
+      "type": "string",
+      "enum": [
+        "urgent",
+        "practical",
+        "decision",
+        "none"
+      ]
+    },
+    "enumImpactBias": {
+      "type": "string",
+      "enum": [
+        "urgent_boost",
+        "practical_boost",
+        "neutral",
+        "low_impact"
+      ]
+    },
+    "urlsBlock": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "home"
+      ],
+      "properties": {
+        "home": {
+          "$ref": "#/$defs/urlHttp"
+        },
+        "feed": {
+          "$ref": "#/$defs/urlHttp"
+        }
+      }
+    },
+    "fetchBlock": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "method",
+        "frequency_min"
+      ],
+      "properties": {
+        "method": {
+          "$ref": "#/$defs/enumFetchMethod"
+        },
+        "frequency_min": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10080
+        }
+      }
+    },
+    "geoBlock": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "default",
+        "scope_hint"
+      ],
+      "properties": {
+        "default": {
+          "$ref": "#/$defs/enumGeoDefault"
+        },
+        "scope_hint": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "briefBlock": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "level",
+        "inclusion",
+        "require_term",
+        "threshold_override"
+      ],
+      "properties": {
+        "level": {
+          "$ref": "#/$defs/enumBriefLevel"
+        },
+        "inclusion": {
+          "$ref": "#/$defs/enumBriefInclusion"
+        },
+        "require_term": {
+          "type": "boolean"
+        },
+        "threshold_override": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 10
+        }
+      }
+    },
+    "notifyBlock": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "policy",
+        "class_default",
+        "allow_time",
+        "cooldown_min"
+      ],
+      "properties": {
+        "policy": {
+          "$ref": "#/$defs/enumNotifyPolicy"
+        },
+        "class_default": {
+          "$ref": "#/$defs/enumNotifyClass"
+        },
+        "allow_time": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/timeWindow"
+            }
+          ]
+        },
+        "cooldown_min": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 10080
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "policy": {
+                "const": "always"
+              }
+            },
+            "required": [
+              "policy"
+            ]
+          },
+          "then": {
+            "properties": {
+              "class_default": {
+                "not": {
+                  "const": "none"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "scoringBlock": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "boost",
+        "impact_bias"
+      ],
+      "properties": {
+        "boost": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": -10,
+          "maximum": 10
+        },
+        "impact_bias": {
+          "$ref": "#/$defs/enumImpactBias"
+        }
+      }
+    },
+    "dedupeBlock": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "priority"
+      ],
+      "properties": {
+        "priority": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 1,
+          "maximum": 99
+        }
+      }
+    },
+    "notesBlock": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "parser",
+        "quality"
+      ],
+      "properties": {
+        "parser": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "quality": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_id",
+        "name",
+        "owner",
+        "type",
+        "urls",
+        "fetch",
+        "geo",
+        "brief",
+        "notify",
+        "scoring",
+        "dedupe",
+        "tags_default",
+        "notes",
+        "enabled"
+      ],
+      "properties": {
+        "source_id": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[A-Z0-9_]+$"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "owner": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "type": {
+          "$ref": "#/$defs/enumSourceType"
+        },
+        "urls": {
+          "$ref": "#/$defs/urlsBlock"
+        },
+        "fetch": {
+          "$ref": "#/$defs/fetchBlock"
+        },
+        "geo": {
+          "$ref": "#/$defs/geoBlock"
+        },
+        "brief": {
+          "$ref": "#/$defs/briefBlock"
+        },
+        "notify": {
+          "$ref": "#/$defs/notifyBlock"
+        },
+        "scoring": {
+          "$ref": "#/$defs/scoringBlock"
+        },
+        "dedupe": {
+          "$ref": "#/$defs/dedupeBlock"
+        },
+        "tags_default": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "notes": {
+          "$ref": "#/$defs/notesBlock"
+        },
+        "enabled": {
+          "type": "boolean"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "fetch": {
+                "properties": {
+                  "method": {
+                    "enum": [
+                      "rss",
+                      "api",
+                      "dataset"
+                    ]
+                  }
+                }
+              }
+            },
+            "required": [
+              "fetch"
+            ]
+          },
+          "then": {
+            "properties": {
+              "urls": {
+                "required": [
+                  "feed"
+                ]
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,1 @@
+[WARN] BA_CITY_NEWS: html_list extracted 0 items (page structure may need explicit selectors)
